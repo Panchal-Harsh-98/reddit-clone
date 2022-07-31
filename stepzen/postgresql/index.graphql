@@ -126,17 +126,14 @@ type Mutation {
   """
   In this subreddit is created if it doesn't already exist in table
   """
-  
   insertSubreddit(topic: String!): Subreddit
-  :Post
-  @dbquery(
-    type: "postgresql"
+    @dbquery(
+      type: "postgresql"
       schema: "public"
       table: "subreddit"
       dml: INSERT
       configuration: "postgresql_config"
-  )
-
+    )
 
   """
   In this mutation example you can see how to do a mutation to delete data from the database.
