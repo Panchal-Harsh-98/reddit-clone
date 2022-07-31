@@ -14,6 +14,21 @@ type Post {
   subreddit_id: ID
   title: String
   username: String
+  votes: [Vote]
+    @materializer(
+      query: "getVoteListById"
+      arguments: { name: "post_id", field: "id" }
+    )
+  comments: [Comment]
+    @materializer(
+      query: "getCommentByPostId"
+      arguments: { name: "post_id", field: "id" }
+    )
+  subreddit: [Subreddit]
+    @materializer(
+      query: "getSubredditListById"
+      arguments: { name: "id", field: "subreddit_id" }
+    )
 }
 
 type Subreddit {
@@ -38,9 +53,6 @@ type Query {
       table: "comment"
       configuration: "postgresql_config"
     )
-  """
-  This query is an example of how to simply paginate your responses.
-  """
   getPaginatedCommentList(first: Int!, after: Int!): [Comment]
     @dbquery(
       type: "postgresql"
@@ -49,15 +61,12 @@ type Query {
       """
       configuration: "postgresql_config"
     )
-  """
-  In this example, a single query parameter is passed. If the request to the DB will
-  return at most one value you can remove the square brackets from the result.
-  """
-  getCommentByPost_id(post_id: ID!): [Comment]
+
+  getCommentByPostId(post_id: ID!): [Comment]
     @dbquery(
       type: "postgresql"
       query: """
-      select * from "public"."comment" where "post_id" = $1
+      select * from "comment" where "post_id" = $1
       """
       configuration: "postgresql_config"
     )
@@ -80,6 +89,14 @@ type Query {
       table: "post"
       configuration: "postgresql_config"
     )
+  getSubredditListById(id: ID!): [Subreddit]
+    @dbquery(
+      type: "postgresql"
+      query: """
+      select * from "subreddit" where "id" = $1
+      """
+      configuration: "postgresql_config"
+    )
   getSubredditList: [Subreddit]
     @dbquery(
       type: "postgresql"
@@ -100,6 +117,15 @@ type Query {
       type: "postgresql"
       schema: "public"
       table: "vote"
+      configuration: "postgresql_config"
+    )
+  getVoteListById(post_id: ID!): [Vote]
+    @dbquery(
+      type: "postgresql"
+      query: """
+      select * from "vote" where "post_id" = $1
+      order by "created_at" desc
+      """
       configuration: "postgresql_config"
     )
 }
