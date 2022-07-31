@@ -2,6 +2,6 @@
 module.exports = {
   reactStrictMode: true,
   images: {
-    domains: ['cdn-icons.flaticon.com'],
+    domains: ['shoppingapi.netlify.app', 'avatars.dicebear.com'],
   },
 };

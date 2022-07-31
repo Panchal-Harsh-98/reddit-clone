@@ -15,15 +15,16 @@ import {
   VideoCameraIcon,
 } from '@heroicons/react/outline';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
 function Header() {
   const { data: session } = useSession();
   return (
     <div className='sticky top-0 z-50 flex bg-white px-4 py-2 shadow-sm'>
-      <div className='relative h-10 w-10 flex-shrink-0 cursor-pointer'>
-        <img
-          src='https://cdn-icons.flaticon.com/png/512/4494/premium/4494500.png?token=exp=1658029573~hmac=e6c22102cf2e047fdcfc62feb00b3a49'
-          alt=''
-          className='object-contain layout__section--fill'
+      <div className='relative h-10 w-10  flex-shrink-0 cursor-pointer'>
+        <Image
+          src={'https://shoppingapi.netlify.app/reddit.png'}
+          objectFit='contain'
+          layout='fill'
         />
       </div>
 
@@ -43,7 +44,7 @@ function Header() {
         <button type='submit' hidden />
       </form>
 
-      <div className='mx-5 space-x-2 text-gray-500 hidden lg:inline-flex'>
+      <div className='mx-5 space-x-2 text-gray-500 items-center hidden lg:inline-flex'>
         <SparklesIcon className='icon' />
         <GlobeIcon className='icon' />
         <VideoCameraIcon className='icon' />
