@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { ADD_POST, ADD_SUBREDDIT } from '../graphql/mutation';
 import client from '../apollo-client';
-import { GET_SUBREDDIT_BY_TOPIC } from '../graphql/queries';
+import { GET_ALL_POST, GET_SUBREDDIT_BY_TOPIC } from '../graphql/queries';
 import toast from 'react-hot-toast';
 type FormData = {
   postTitle: string;
@@ -18,7 +18,9 @@ type FormData = {
 
 function PostBox() {
   const { data: session } = useSession();
-  const [addPost] = useMutation(ADD_POST);
+  const [addPost] = useMutation(ADD_POST, {
+    refetchQueries: [GET_ALL_POST, 'getPostList'],
+  });
   const [addSubreddit] = useMutation(ADD_SUBREDDIT);
   const [imageBoxOpen, setImageBoxOpen] = useState(false);
   const {
@@ -34,6 +36,8 @@ function PostBox() {
 
     try {
       // query the subreddit topic if exists
+      console.log(formData);
+
       const {
         data: { getSubredditListByTopic },
       } = await client.query({
@@ -42,13 +46,16 @@ function PostBox() {
           topic: formData.subreddit,
         },
       });
-
+      console.log(getSubredditListByTopic);
       const subredditExists = getSubredditListByTopic.length > 0;
+      console.log(subredditExists);
+
       if (!subredditExists) {
         // create subreddit
-
+        console.log('subreddit does not exists');
+        console.log('creating new subreddit');
         const {
-          data: { inserSubreddit: newSubreddit },
+          data: { insertSubreddit: newSubreddit },
         } = await addSubreddit({
           variables: {
             topic: formData.subreddit,
@@ -85,23 +92,23 @@ function PostBox() {
             username: session?.user?.name,
           },
         });
-
-        setValue('postBody', '');
-        setValue('postImage', '');
-        setValue('postTitle', '');
-        setValue('subreddit', '');
         console.log('new post created  . . . ', newPost);
-
-        toast.success('New Post Created!', {
-          id: notification,
-        });
-        // use existing
       }
+      setValue('postBody', '');
+      setValue('postImage', '');
+      setValue('postTitle', '');
+      setValue('subreddit', '');
+      console.log(notification);
+
+      toast.success('New Post Created!', {
+        id: notification,
+      });
     } catch (error) {
+      console.log(notification);
       toast.error('Oops! Someting went wrong', {
         id: notification,
       });
-      console.log('post creation error', error);
+      console.log(error);
     }
     console.log(formData);
   });
