@@ -1,0 +1,45 @@
+type Subreddit {
+  created_at: DateTime
+  id: ID!
+  topic: String
+}
+
+type Query {
+  getSubredditListById(id: ID!): [Subreddit]
+    @dbquery(
+      type: "postgresql"
+      query: """
+      select * from "subreddit" where "id" = $1
+      """
+      configuration: "postgresql_config"
+    )
+  getSubredditList: [Subreddit]
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "subreddit"
+      configuration: "postgresql_config"
+    )
+  getSubredditListByTopic(topic: String!): [Subreddit]
+    @dbquery(
+      type: "postgresql"
+      query: """
+      select * from "subreddit" where "topic" = $1
+      """
+      configuration: "postgresql_config"
+    )
+}
+
+type Mutation {
+  """
+  In this subreddit is created if it doesn't already exist in table
+  """
+  insertSubreddit(topic: String!): Subreddit
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "subreddit"
+      dml: INSERT
+      configuration: "postgresql_config"
+    )
+}

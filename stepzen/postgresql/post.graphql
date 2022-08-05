@@ -1,0 +1,84 @@
+type Post {
+  body: String
+  created_at: DateTime
+  id: ID!
+  image: String
+  subreddit_id: ID
+  title: String
+  username: String
+  votes: [Vote]
+    @materializer(
+      query: "getVoteListById"
+      arguments: { name: "post_id", field: "id" }
+    )
+  comments: [Comment]
+    @materializer(
+      query: "getCommentByPostId"
+      arguments: { name: "post_id", field: "id" }
+    )
+  subreddit: [Subreddit]
+    @materializer(
+      query: "getSubredditListById"
+      arguments: { name: "id", field: "subreddit_id" }
+    )
+}
+
+type Query {
+  getPostList: [Post]
+    @dbquery(
+      type: "postgresql"
+      query: """
+      select * from "post"
+      order by "post"."created_at" desc
+      """
+      configuration: "postgresql_config"
+    )
+  getPostListByTopic(topic: String!): [Post]
+    @dbquery(
+      type: "postgresql"
+      configuration: "postgresql_config"
+      query: """
+      select * from "post"
+      join "subreddit" on "subreddit"."id" = "post"."subreddit_id"
+      where "subreddit"."topic" = $1
+      order by "post"."created_at" desc
+      """
+    )
+}
+
+type Mutation {
+  insertPost(
+    image: String
+    body: String!
+    subreddit_id: ID!
+    title: String!
+    username: String!
+  ): Post
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "post"
+      dml: INSERT
+      configuration: "postgresql_config"
+    )
+
+  """
+  In this mutation example you can see how to do a mutation to delete data from the database.
+  """
+  deletePost(
+    image: String!
+    id: ID!
+    body: String!
+    created_at: DateTime!
+    subreddit_id: ID!
+    title: String!
+    username: String!
+  ): Post
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "post"
+      dml: DELETE
+      configuration: "postgresql_config"
+    )
+}
