@@ -44,6 +44,15 @@ type Query {
       order by "post"."created_at" desc
       """
     )
+  getPostListById(post_id: ID!): Post
+    @dbquery(
+      type: "postgresql"
+      configuration: "postgresql_config"
+      query: """
+      select * from "post"
+      where "post"."id" = $1
+      """
+    )
 }
 
 type Mutation {

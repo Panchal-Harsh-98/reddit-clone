@@ -35,3 +35,15 @@ export const ADD_SUBREDDIT = gql`
     }
   }
 `;
+
+export const ADD_COMMENT = gql`
+  mutation addComment($postId: ID!, $text: String!, $username: String!) {
+    insertComment(post_id: $postID, text: $text, username: $username) {
+      created_at
+      id
+      post_id
+      text
+      username
+    }
+  }
+`;

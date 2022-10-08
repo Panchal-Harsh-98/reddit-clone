@@ -4,6 +4,7 @@ schema
       "postgresql/index.graphql"
       "postgresql/post.graphql"
       "postgresql/subreddit.graphql"
+      "postgresql/comment.graphql"
     ]
   ) {
   query: Query

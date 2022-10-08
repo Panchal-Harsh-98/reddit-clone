@@ -1,0 +1,10 @@
+type Mutation {
+  insertComment(post_id: ID!, text: String!, username: String!): Comment
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "comment"
+      dml: INSERT
+      configuration: "postgresql_config"
+    )
+}
